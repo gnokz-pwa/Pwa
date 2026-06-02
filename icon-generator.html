@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gnokz Icon Generator</title>
+<style>
+  body { font-family: monospace; background: #040405; color: #fff; padding: 20px; }
+  h1 { color: #1db954; margin-bottom: 20px; }
+  .btn { background: #1db954; color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; margin: 6px; }
+  .btn:hover { background: #1ed760; }
+  canvas { display: block; margin: 10px 0; border-radius: 12px; }
+  .step { background: #111; border: 1px solid #222; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .note { color: #888; font-size: 12px; margin-top: 8px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 16px; }
+</style>
+</head>
+<body>
+<h1>🎵 Gnokz Player — PWA Icon Generator</h1>
+
+<div class="step">
+  <strong>Step 1:</strong> Generate all icons below, then download each one.
+  <div class="note">Place them in an <code>icons/</code> folder next to your index.html</div>
+</div>
+
+<div class="grid" id="icon-grid"></div>
+
+<div class="step">
+  <strong>Step 2:</strong> Also download the screenshot placeholder.
+  <div class="note">Replace with an actual screenshot of your app for best PWABuilder score.</div>
+  <button class="btn" onclick="generateScreenshot()">Generate Screenshot Placeholder</button>
+  <canvas id="screenshot-canvas"></canvas>
+</div>
+
+<script>
+function drawGnokzIcon(canvas, size, maskable) {
+  const ctx = canvas.getContext('2d');
+  canvas.width = size;
+  canvas.height = size;
+
+  const pad = maskable ? size * 0.1 : 0;
+
+  // Background
+  const bg = ctx.createLinearGradient(0, 0, size, size);
+  bg.addColorStop(0, '#040405');
+  bg.addColorStop(1, '#0d1a0f');
+  ctx.fillStyle = bg;
+
+  if (maskable) {
+    ctx.fillRect(0, 0, size, size);
+  } else {
+    ctx.beginPath();
+    ctx.roundRect(0, 0, size, size, size * 0.2);
+    ctx.fill();
+  }
+
+  // Green glow circle
+  const cx = size / 2;
+  const cy = size / 2;
+  const glowRadius = (size / 2) - pad;
+  const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowRadius);
+  glow.addColorStop(0, 'rgba(29,185,84,0.15)');
+  glow.addColorStop(1, 'rgba(29,185,84,0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, size, size);
+
+  // Music note icon
+  const iconSize = (size * 0.45) - pad;
+  const ix = cx;
+  const iy = cy + (size * 0.03);
+
+  ctx.save();
+  ctx.translate(ix, iy);
+
+  // Note stem
+  const stemW = iconSize * 0.12;
+  const stemH = iconSize * 0.7;
+  const noteX = iconSize * 0.08;
+
+  // Two note heads + beamed stem
+  ctx.fillStyle = '#1db954';
+
+  // Left note head
+  ctx.beginPath();
+  ctx.ellipse(-iconSize * 0.22, stemH * 0.1, iconSize * 0.17, iconSize * 0.12, -0.35, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Right note head
+  ctx.beginPath();
+  ctx.ellipse(iconSize * 0.22, stemH * 0.22, iconSize * 0.17, iconSize * 0.12, -0.35, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Left stem
+  ctx.fillRect(-iconSize * 0.22 + iconSize * 0.12, -stemH * 0.72, stemW, stemH * 0.82);
+
+  // Right stem
+  ctx.fillRect(iconSize * 0.22 + iconSize * 0.12, -stemH * 0.6, stemW, stemH * 0.82);
+
+  // Beam connecting the two stems
+  ctx.beginPath();
+  ctx.moveTo(-iconSize * 0.22 + iconSize * 0.12, -stemH * 0.72);
+  ctx.lineTo(iconSize * 0.22 + iconSize * 0.12 + stemW, -stemH * 0.6);
+  ctx.lineTo(iconSize * 0.22 + iconSize * 0.12 + stemW, -stemH * 0.6 + stemW * 1.4);
+  ctx.lineTo(-iconSize * 0.22 + iconSize * 0.12, -stemH * 0.72 + stemW * 1.4);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+
+  // "G" letter watermark at bottom
+  ctx.font = `bold ${size * 0.13}px 'Arial', sans-serif`;
+  ctx.fillStyle = 'rgba(29,185,84,0.5)';
+  ctx.textAlign = 'center';
+  ctx.fillText('GNOKZ', cx, size - size * 0.08);
+}
+
+function generateScreenshot() {
+  const canvas = document.getElementById('screenshot-canvas');
+  canvas.width = 390;
+  canvas.height = 844;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#040405';
+  ctx.fillRect(0, 0, 390, 844);
+
+  // Green orb
+  const glow = ctx.createRadialGradient(195, 0, 0, 195, 0, 300);
+  glow.addColorStop(0, 'rgba(29,185,84,0.12)');
+  glow.addColorStop(1, 'rgba(29,185,84,0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, 390, 844);
+
+  // Title
+  ctx.font = 'bold 28px Arial';
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'left';
+  ctx.fillText('Gnokz Player', 24, 80);
+
+  ctx.font = 'bold 10px Arial';
+  ctx.fillStyle = '#1db954';
+  ctx.fillText('PRO v3.5', 200, 72);
+
+  // Mock cards
+  for (let i = 0; i < 4; i++) {
+    const y = 140 + i * 80;
+    ctx.fillStyle = 'rgba(18,18,18,0.65)';
+    ctx.beginPath();
+    ctx.roundRect(16, y, 358, 64, 12);
+    ctx.fill();
+
+    ctx.fillStyle = 'rgba(29,185,84,0.2)';
+    ctx.beginPath();
+    ctx.roundRect(26, y + 10, 44, 44, 8);
+    ctx.fill();
+
+    ctx.fillStyle = '#555';
+    ctx.font = 'bold 13px Arial';
+    ctx.fillText('Track Title Here', 82, y + 28);
+    ctx.font = '11px Arial';
+    ctx.fillStyle = '#444';
+    ctx.fillText('YouTube', 82, y + 46);
+  }
+
+  // Bottom bar
+  ctx.fillStyle = 'rgba(29,185,84,0.08)';
+  ctx.fillRect(0, 780, 390, 64);
+
+  const a = document.createElement('a');
+  a.download = 'screenshot-mobile.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+const icons = [
+  { name: 'icon-192.png', size: 192, maskable: false },
+  { name: 'icon-512.png', size: 512, maskable: false },
+  { name: 'icon-maskable-192.png', size: 192, maskable: true },
+  { name: 'icon-maskable-512.png', size: 512, maskable: true },
+];
+
+const grid = document.getElementById('icon-grid');
+
+icons.forEach(({ name, size, maskable }) => {
+  const wrap = document.createElement('div');
+  wrap.className = 'step';
+  wrap.style.minWidth = '180px';
+
+  const label = document.createElement('div');
+  label.textContent = name + (maskable ? ' (maskable)' : '');
+  label.style.marginBottom = '8px';
+  label.style.color = '#1db954';
+
+  const canvas = document.createElement('canvas');
+  drawGnokzIcon(canvas, Math.min(size, 128), maskable);
+  canvas.style.width = '80px';
+  canvas.style.height = '80px';
+
+  const btn = document.createElement('button');
+  btn.className = 'btn';
+  btn.textContent = `⬇ Download ${size}px`;
+  btn.onclick = () => {
+    const fullCanvas = document.createElement('canvas');
+    drawGnokzIcon(fullCanvas, size, maskable);
+    const a = document.createElement('a');
+    a.download = name;
+    a.href = fullCanvas.toDataURL('image/png');
+    a.click();
+  };
+
+  wrap.appendChild(label);
+  wrap.appendChild(canvas);
+  wrap.appendChild(btn);
+  grid.appendChild(wrap);
+});
+</script>
+</body>
+</html>
